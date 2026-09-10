@@ -1,0 +1,716 @@
+/* ---------------------------------------------------------
+   Tokens
+--------------------------------------------------------- */
+:root {
+  --color-bg: #0b1f33;
+  --color-bg-deep: #071523;
+  --color-grid-line: rgba(255, 255, 255, 0.06);
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.16);
+  --color-text: #f4f7fa;
+  --color-text-muted: #93a8bd;
+  --color-accent: #ff6b35;
+  --color-accent-soft: rgba(255, 107, 53, 0.18);
+  --color-status: #4ade80;
+
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+
+  --container-width: 1080px;
+}
+
+/* ---------------------------------------------------------
+   Reset
+--------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------
+   Hero
+--------------------------------------------------------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-3);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    repeating-linear-gradient(0deg, var(--color-grid-line) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, var(--color-grid-line) 0 1px, transparent 1px 48px),
+    radial-gradient(120% 90% at 50% -10%, var(--color-bg-deep) 0%, var(--color-bg) 60%),
+    var(--color-bg);
+  background-size: 48px 48px, 48px 48px, 100% 100%, 100%;
+  animation: gridDrift 50s linear infinite;
+}
+
+/* Structural steel stock, slowly rotating on either side of the name.
+   Background removed to a transparent PNG so only the metal shows. */
+.hero__steel {
+  position: absolute;
+  top: 50%;
+  width: min(30vw, 320px);
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero__steel--left {
+  left: -6%;
+}
+
+.hero__steel--right {
+  right: -6%;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.hero__steel-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 28px var(--color-accent-soft));
+  animation: steelSpin 34s linear infinite;
+}
+
+@media (max-width: 760px) {
+  .hero__steel {
+    display: none;
+  }
+}
+
+/* Soft glow that drifts toward the pointer */
+.hero__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 55vw;
+  height: 55vw;
+  max-width: 720px;
+  max-height: 720px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--color-accent-soft) 0%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 0;
+  transition: transform 0.6s ease-out;
+}
+
+/* Fine grain for a bit of tooth on the flat navy */
+.hero__grain {
+  position: absolute;
+  inset: -20%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter>\
+<rect width='100%25' height='100%25' filter='url(%23n)'/>\
+</svg>");
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  backdrop-filter: blur(6px);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  margin-bottom: var(--space-3);
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out 0.05s forwards;
+}
+
+.hero__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-status);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
+  flex-shrink: 0;
+}
+
+.hero__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  font-size: clamp(2.75rem, 9vw, 6.5rem);
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out 0.2s forwards;
+}
+
+.hero__title {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  margin-top: var(--space-2);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out 0.35s forwards;
+}
+
+/* Accent rule that draws in under the title, like a ruled dimension line */
+.hero__title-line {
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  margin: 0.85rem auto 0;
+  animation: drawLine 0.9s ease-out 0.95s forwards;
+}
+
+.hero__tagline {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 34ch;
+  margin-top: var(--space-3);
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out 0.5s forwards;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out 0.65s forwards;
+}
+
+/* ---------------------------------------------------------
+   Buttons
+--------------------------------------------------------- */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.9rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-bg-deep);
+}
+
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -8px var(--color-accent-soft);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn--secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------
+   Keyframes
+--------------------------------------------------------- */
+@keyframes gridDrift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 48px 48px, 48px 48px, 0 0, 0 0;
+  }
+}
+
+@keyframes steelSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawLine {
+  to {
+    width: 64px;
+  }
+}
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+@media (max-width: 480px) {
+  .hero {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------
+   Motion preference
+--------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hero__steel-img,
+  .hero__eyebrow,
+  .hero__name,
+  .hero__title,
+  .hero__tagline,
+  .hero__actions,
+  .hero__title-line,
+  .btn {
+    animation: none;
+    transition: none;
+  }
+
+  .hero__eyebrow,
+  .hero__name,
+  .hero__title,
+  .hero__tagline,
+  .hero__actions {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero__title-line {
+    width: 64px;
+  }
+
+  .hero__glow {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   Shared section layout
+--------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin-top: var(--space-1);
+}
+
+/* Faint static drafting grid shared by the sections below the hero */
+.grid-bg {
+  position: relative;
+  background:
+    repeating-linear-gradient(0deg, var(--color-grid-line) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, var(--color-grid-line) 0 1px, transparent 1px 48px),
+    var(--color-bg);
+  background-size: 48px 48px, 48px 48px, 100%;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------------------------------------------------------
+   About
+--------------------------------------------------------- */
+.about {
+  padding-block: var(--space-6);
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.about__text {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  max-width: 62ch;
+  margin-top: var(--space-3);
+}
+
+/* Title block, styled after the info block on an engineering drawing sheet */
+.title-block {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.title-block__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0.85rem var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title-block__row:last-child {
+  border-bottom: none;
+}
+
+.title-block__row dt {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.title-block__row dd {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  text-align: right;
+}
+
+/* ---------------------------------------------------------
+   Skills
+--------------------------------------------------------- */
+.skills {
+  padding-block: var(--space-6);
+}
+
+.skills__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.skill-card {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+  padding: var(--space-3);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.skill-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.skill-card__label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.skill-card__desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin-top: 0.4rem;
+}
+
+/* ---------------------------------------------------------
+   Responsive — About & Skills
+--------------------------------------------------------- */
+@media (max-width: 760px) {
+  .about__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about,
+  .skills {
+    padding-block: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .skills__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   Smooth scroll for the hero's in-page links
+--------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------------------------------------------------------
+   Work
+--------------------------------------------------------- */
+.work {
+  padding-block: var(--space-6);
+}
+
+.work__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.project-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.project-card__index {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+}
+
+.project-card__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--color-text);
+  margin-top: var(--space-2);
+}
+
+.project-card__desc {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+  flex-grow: 1;
+}
+
+.project-card .btn {
+  margin-top: var(--space-3);
+}
+
+/* ---------------------------------------------------------
+   Buttons — small variant, used inside cards
+--------------------------------------------------------- */
+.btn--sm {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------
+   Contact
+--------------------------------------------------------- */
+.contact {
+  padding-block: var(--space-6);
+}
+
+.contact__intro {
+  max-width: 60ch;
+}
+
+.contact__text {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-top: var(--space-2);
+}
+
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  max-width: 640px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field--full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.form-field input,
+.form-field textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.contact-form .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+  cursor: pointer;
+}
+
+.form-status {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--color-status);
+  min-height: 1em;
+}
+
+/* ---------------------------------------------------------
+   Responsive — Work & Contact
+--------------------------------------------------------- */
+@media (max-width: 760px) {
+  .work,
+  .contact {
+    padding-block: var(--space-5);
+  }
+}
+
+@media (max-width: 560px) {
+  .contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field--full {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition: none;
+  }
+}
